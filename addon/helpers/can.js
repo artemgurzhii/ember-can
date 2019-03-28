@@ -1,6 +1,6 @@
 import Helper from '@ember/component/helper';
-
 import { inject as service } from '@ember/service';
+import { assign } from '@ember/polyfills';
 
 export default Helper.extend({
   can: service(),
@@ -8,13 +8,24 @@ export default Helper.extend({
   ability: null,
   propertyName: null,
 
-  compute([abilityString, model], properties) {
+  compute([abilityString, model], props) {
+    let properties = assign({}, props);
+    let recompute = true;
+
+    if (properties.recompute !== undefined) {
+      recompute = properties.recompute;
+
+      delete properties.recompute;
+    }
+
     let service = this.get('can');
     let { abilityName, propertyName } = service.parse(abilityString);
     let ability = service.abilityFor(abilityName, model, properties);
 
-    this._removeAbilityObserver();
-    this._addAbilityObserver(ability, propertyName);
+    if (recompute) {
+      this._removeAbilityObserver();
+      this._addAbilityObserver(ability, propertyName);
+    }
 
     return ability.get(propertyName);
   },
