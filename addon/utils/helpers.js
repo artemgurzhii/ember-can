@@ -2,7 +2,7 @@ import { classify } from '@ember/string';
 
 const stopWords = ['of', 'in', 'for', 'to', 'from', 'on'];
 
-export default function(string) {
+export function normalize(string) {
   let parts = string.split(' ');
   let abilityName = parts.pop();
   let last = parts[parts.length - 1];
@@ -15,4 +15,10 @@ export default function(string) {
   let propertyName = `can${ability}`;
 
   return { propertyName, abilityName };
+}
+
+export function isPromise(obj) {
+  return !!obj
+    && (typeof obj === 'object' || typeof obj === 'function')
+    && typeof obj.then === 'function';
 }
