@@ -20,7 +20,8 @@
   "contributors": [
     "Ben Limmer <hello@benlimmer.com>",
     "Miles Zimmerman <miles@maztek.io>",
-    "Maciej Kwaśniak <maciej.kwasniak@macsour.com>"
+    "Maciej Kwaśniak <maciej.kwasniak@macsour.com>",
+    "Artem Hurzhii <artem.gurzhii@gmail.com>"
   ],
   "scripts": {
     "build": "ember build",
@@ -48,6 +49,7 @@
     "ember-cli-sri": "2.1.1",
     "ember-cli-template-lint": "^1.0.0-beta.1",
     "ember-cli-uglify": "2.1.0",
+    "ember-data": "^3.8.0",
     "ember-disable-prototype-extensions": "1.1.3",
     "ember-export-application-global": "2.0.0",
     "ember-load-initializers": "1.1.0",

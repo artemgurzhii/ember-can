@@ -3,10 +3,13 @@ import { setupRenderingTest } from 'ember-qunit';
 import { render } from '@ember/test-helpers';
 import hbs from 'htmlbars-inline-precompile';
 import { Ability } from 'ember-can';
-import { computed } from '@ember/object';
+import EmberObject, { computed } from '@ember/object';
 import Service from '@ember/service';
+import { A } from '@ember/array';
 import { inject as service } from '@ember/service';
 import { run } from '@ember/runloop';
+import DS from 'ember-data';
+import RSVP from 'rsvp';
 
 module('Integration | Helper | can', function(hooks) {
   setupRenderingTest(hooks);
@@ -94,6 +97,33 @@ module('Integration | Helper | can', function(hooks) {
     assert.dom(this.element).hasText('false');
 
     run(() => this.owner.lookup('service:session').set('isLoggedIn', true));
+    assert.dom(this.element).hasText('true');
+  });
+
+  test('it reacts on async abilities', async function(assert) {
+    assert.expect(2);
+
+    this.owner.register('service:array', Service.extend({
+      content: A([
+        EmberObject.create({ key: 'lorem' }),
+        EmberObject.create({ key: 'ipsum' }),
+      ])
+    }));
+
+    this.owner.register('ability:post', Ability.extend({
+      array: service(),
+
+      canWrite: computed('array.@each.key', function() {
+        const promise = RSVP.resolve(this.get('array.content').mapBy('key').every(Boolean));
+
+        return DS.PromiseObject.create({ promise });
+      })
+    }));
+
+    await render(hbs`{{if (can "write post") "true" "false"}}`);
+    assert.dom(this.element).hasText('false');
+
+    run(() => this.owner.lookup('service:array').get('content').setEach('key', null));
     assert.dom(this.element).hasText('true');
   });
 });
